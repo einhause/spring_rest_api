@@ -30,7 +30,7 @@ public class StudentService {
         Optional<Student> studentOptional = studentRepository.findStudentByEmail(student.getEmail());
 
         if (studentOptional.isPresent()) {
-            throw new IllegalStateException("email already taken");
+            throw new IllegalStateException("Please use another email.");
         }
 
         studentRepository.save(student);
@@ -40,7 +40,7 @@ public class StudentService {
         boolean studentExists = studentRepository.existsById(studentId);
 
         if (!studentExists) {
-            throw new IllegalStateException("student with id " + studentId + " does not exist!");
+            throw new IllegalStateException(String.format("Student with ID: %d does not exist!", studentId));
         }
 
         studentRepository.deleteById(studentId);
@@ -49,7 +49,8 @@ public class StudentService {
     @Transactional // use the setters in the entity to update the DB automatically
     public void updateStudent(Long studentId, String name, String email) {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new IllegalStateException("student with id " + studentId + " does not exist!"));
+                .orElseThrow(() ->
+                        new IllegalStateException(String.format("Student with ID: %d does not exist!", studentId)));
 
         if (name != null && name.length() > 0 && !Objects.equals(student.getName(), name)) {
             student.setName(name);
@@ -58,7 +59,7 @@ public class StudentService {
         if (email != null && email.length() > 0 && !Objects.equals(student.getEmail(), email)) {
             Optional<Student> studentOptional = studentRepository.findStudentByEmail(email);
             if (studentOptional.isPresent()) {
-                throw new IllegalStateException("email already taken!");
+                throw new IllegalStateException("Please use another email.");
             }
             student.setEmail(email);
         }
